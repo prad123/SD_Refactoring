@@ -3,23 +3,51 @@
 #include "../Src/game.h"
 
 board_type* g_board;
+
 const int rows = 6;
 const int cols = 7;
 
 void test_valid_moves(){
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	makeMove(g_board, 4);
-	assert_true(validMove(g_board,4)==1);
+	int i = 0;
+	for(i=0; i < rows; ++i){
+		assert_true(validMove(g_board,4)==1);
+		makeMove(g_board, 4);
+	}
+	assert_true(validMove(g_board,4)==0);
+}
+
+void test_moves_left(){
+	int i, j;
+	assert_true(validMovesLeft(g_board)==1);
+	for(i=0; i < cols; ++i){
+		for(j=0; j< rows; ++j){
+			assert_true(validMovesLeft(g_board)==1);
+			makeMove(g_board, i);
+		}
+	}
+	assert_true(validMovesLeft(g_board)==0);
+}
+
+void test_state(){
+	point_type* pt = newPoint(0,0);
+	
+	//test player 1 option
+	setState(pt, PLAYER_ONE);
+	assert_int_equal(getState(pt), PLAYER_ONE);
+	
+	//test player 2 option
+	setState(pt, PLAYER_TWO);
+	assert_int_equal(getState(pt), PLAYER_TWO);
+
+	free(pt);
+	
 }
 
 void test_fixture_one(){
 	test_fixture_start();
+	run_test(test_state);
 	run_test(test_valid_moves);
+	run_test(test_moves_left);
 	test_fixture_end();
 }
 
@@ -28,7 +56,7 @@ void all_tests(){
 }
 
 void test_setup(){
-	g_board = createBoard(rows, cols);
+	g_board = createBoard(cols, rows);
 }
 
 void test_teardown(){
